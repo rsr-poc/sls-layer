@@ -14,16 +14,16 @@ custom:
   dotenvVars: ${file(configs.js)}
 
 layers:
-  PocLayerPrisma:
+  PocPrisma:
     path: layers/prisma-layer
-  PocLayerNodeModules:
+  PocNodeModules:
     path: layers/node_modules-layer
 
 functions:
   api:
     handler: src/handler.server
     layers:
-      - { Ref: PocLayerPrisma }
-      - { Ref: PocLayerNodeModules }
+      - !Ref PocPrismaLambdaLayer
+      - !Ref PocNodeModulesLambdaLayer
     events:
       - httpApi: "*"

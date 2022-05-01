@@ -159,4 +159,4 @@ jobs:
         run: npm ci
 
       - name: Deploy AWS
-        run: npx serverless deploy --package build-packagews
+        run: npx serverless deploy --package build-package
