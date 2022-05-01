@@ -156,7 +156,7 @@ jobs:
           EOF
 
       - name: Install serverless
-        run: npm i -g serverless
+        run: npm ci
 
       - name: Deploy AWS
-        run: sls deploy --package build-package
+        run: npx serverless deploy --package build-packagews
