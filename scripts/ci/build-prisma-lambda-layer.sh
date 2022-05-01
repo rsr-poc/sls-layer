@@ -3,6 +3,13 @@ function build_prisma_lambda_layer() {
   echo "Cleaning up workspace ..."
   rm -rf lambda-layers-prisma-client
 
+  echo "Remove prismaDevDependencies"
+  rm node_modules/@prisma/engines/introspection-engine-debian*
+  rm node_modules/@prisma/engines/libquery_engine-debian*
+  rm node_modules/@prisma/engines/migration-engine-debian*
+  rm node_modules/@prisma/engines/prisma-fmt-debian*
+R
+
   echo "Creating layer ..."
   mkdir -p lambda-layers-prisma-client/nodejs/node_modules/.prisma
   mkdir -p lambda-layers-prisma-client/nodejs/node_modules/@prisma
