@@ -98,6 +98,13 @@ jobs:
           name: prisma-layer
           path: ./layers/prisma-layer
 
+      - name: Descompact layers
+        run: |
+          tar -C ./layers/prisma-layer -xf ./layers/prisma-layer/nodejs.tar.gz
+          rm -rf ./layers/prisma-layer/nodejs.tar.gz
+          tar -C ./layers/node_modules-layer -xf ./layers/node_modules-layer/nodejs.tar.gz
+          rm -rf ./layers/node_modules-layer/nodejs.tar.gz
+
       - name: Install dependencies
         run: npm i
 
