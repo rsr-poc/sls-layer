@@ -52,7 +52,6 @@ jobs:
           PRISMA_BINARY_TARGET=["rhel-openssl-1.0.x"]
           EOF
 
-
       # Install dependencies
       - name: Install PROD packages
         run: npm i
@@ -74,10 +73,8 @@ jobs:
   package:
     name: Package lambda
     needs:
-      [
-        build-node_modules-lambda-layer
-        build-prisma-layer
-      ]
+      - build-node_modules-lambda-layer
+      - build-prisma-layer
 
     runs-on: ubuntu-18.04
     steps:
@@ -98,17 +95,15 @@ jobs:
         with:
           name: prisma-layer
           path: ./layers/prisma-layer
-      
+
       - name: Install dependencies
         run: npm i
 
       - name: Package serverless
         run: npx serverless package --stage dev --package build-package
 
-      - name Store package
+      - name: Store Package
         uses: actions/upload-artifact@v2
         with:
           name: build-package
           path: ./build-package
-
-      
