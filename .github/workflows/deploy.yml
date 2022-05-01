@@ -102,7 +102,7 @@ jobs:
       - name: Package serverless
         run: npx serverless package --stage dev --package build-package
 
-      - name: Store Package
+      - name: Store Packages
         uses: actions/upload-artifact@v2
         with:
           name: build-package
