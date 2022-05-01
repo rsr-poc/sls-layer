@@ -105,8 +105,15 @@ jobs:
           tar -C ./layers/node_modules-layer -xf ./layers/node_modules-layer/nodejs.tar.gz
           rm -rf ./layers/node_modules-layer/nodejs.tar.gz
 
+      - name: Generate environment
+        run: |
+          cat>>.env<<EOF
+          DATABASE_URL=postgresql://awlcbesk:Bceo1WgnCxvxg5fnCYYQ5mH9exqD5P7i@ruby.db.elephantsql.com:5432/awlcbesk
+          PRISMA_BINARY_TARGET=["rhel-openssl-1.0.x"]
+          EOF
+
       - name: Install dependencies
-        run: npm i
+        run: npm ci
 
       - name: Package serverless
         run: npx serverless package --stage dev --package build-package
@@ -141,8 +148,15 @@ jobs:
           name: build-package
           path: ./build-package
 
+      - name: Generate environment
+        run: |
+          cat>>.env<<EOF
+          DATABASE_URL=postgresql://awlcbesk:Bceo1WgnCxvxg5fnCYYQ5mH9exqD5P7i@ruby.db.elephantsql.com:5432/awlcbesk
+          PRISMA_BINARY_TARGET=["rhel-openssl-1.0.x"]
+          EOF
+
       - name: Install serverless
         run: npm i -g serverless
 
-      - name: Package serverless
+      - name: Deploy AWS
         run: sls deploy --package build-package
