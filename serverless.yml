@@ -16,7 +16,7 @@ custom:
 layers:
   PocLayerPrisma:
     path: layers/prisma-layer
-  PocLayersNodeModules::
+  PocLayerNodeModules:
     path: layers/node_modules-layer
 
 functions:
