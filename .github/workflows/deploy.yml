@@ -72,10 +72,8 @@ jobs:
   package:
     name: Package lambda
     needs:
-      [
-        build-node_modules-lambda-layer
-        build-prisma-layer
-      ]
+      - build-node_modules-lambda-layer
+      - build-prisma-layer
 
     runs-on: ubuntu-18.04
     steps:
@@ -103,7 +101,7 @@ jobs:
       - name: Package serverless
         run: npx serverless package --stage dev --package build-package
 
-      - name Store package
+      - name: Store Package
         uses: actions/upload-artifact@v2
         with:
           name: build-package
