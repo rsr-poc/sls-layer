@@ -141,14 +141,8 @@ jobs:
           name: build-package
           path: ./build-package
 
-      - name: Descompact package
-        run: |
-          ls -l
-          tar -C ./build-package/build-package -xf ./build-package/build-package.tar.gz
-          rm ./build-package/build-package.tar.gz
-
       - name: Install serverless
         run: npm i -g serverless
 
       - name: Package serverless
-        run: sls deploy --package build-package/build-package
+        run: sls deploy --package build-package
