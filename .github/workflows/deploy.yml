@@ -51,7 +51,6 @@ jobs:
           DATABASE_URL=postgresql://awlcbesk:Bceo1WgnCxvxg5fnCYYQ5mH9exqD5P7i@ruby.db.elephantsql.com:5432/awlcbesk
           PRISMA_BINARY_TARGET=["rhel-openssl-1.0.x"]
           EOF
-
       # Install dependencies
       - name: Install PROD packages
         run: npm i
@@ -73,8 +72,10 @@ jobs:
   package:
     name: Package lambda
     needs:
-      - build-node_modules-lambda-layer
-      - build-prisma-layer
+      [
+        build-node_modules-lambda-layer
+        build-prisma-layer
+      ]
 
     runs-on: ubuntu-18.04
     steps:
@@ -102,7 +103,7 @@ jobs:
       - name: Package serverless
         run: npx serverless package --stage dev --package build-package
 
-      - name: Store Packages
+      - name Store package
         uses: actions/upload-artifact@v2
         with:
           name: build-package
