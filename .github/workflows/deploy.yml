@@ -116,3 +116,37 @@ jobs:
         with:
           name: build-package
           path: ./build-package
+
+  deploy-dev:
+    name: Deploy AWS
+    needs:
+      - package
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: build-package
+          path: ./build-package
+
+      - name: Descompact package
+        run: |
+          tar -C ./build-package -xf ./build-package.tar.gz
+          rm ./build-package.tar.gz
+
+      - name: Install serverless
+        run: npm i -g serverless
+
+      - name: Package serverless
+        run: sls deploy --package build-package
