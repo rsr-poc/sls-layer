@@ -1,0 +1,114 @@
+name: Deploy lambdas
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  # Build node_modules
+  build-node_modules-lambda-layer:
+    name: Build node_modules layer
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      # Only install PROD packages i.e. no `@types/*` packages or dev-related packages
+      - name: Install PROD packages
+        run: yarn --production
+
+      - name: Prepare lambda layer
+        run: ./scripts/ci/build-node_modules-lambda-layer.sh
+
+      - name: Store Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: node_modules-layer
+          path: ./lambda-layers-node_modules
+
+  # Build prisma layer
+  build-prisma-layer:
+    name: Build prisma layer
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      # Generate .env
+      - name: Generate environment
+        run: |
+          cat>>.env<<EOF
+          DATABASE_URL=postgresql://awlcbesk:Bceo1WgnCxvxg5fnCYYQ5mH9exqD5P7i@ruby.db.elephantsql.com:5432/awlcbesk
+          PRISMA_BINARY_TARGET=["rhel-openssl-1.0.x"]
+          EOF
+
+
+      # Install dependencies
+      - name: Install PROD packages
+        run: npm i
+
+      # Generate Prisma Client and binary that can run in a lambda environment
+      - name: Prepare prisma client
+        run: npx prisma generate
+
+      - name: Prepare lambda layer
+        run: ./scripts/ci/build-prisma-lambda-layer.sh
+
+      - name: Store Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: prisma-layer
+          path: ./lambda-layers-prisma-client
+
+  # Deploy
+  package:
+    name: Package lambda
+    needs:
+      [
+        build-node_modules-lambda-layer
+        build-prisma-layer
+      ]
+
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: node_modules-layer
+          path: ./layers/node_modules-layer
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: prisma-layer
+          path: ./layers/prisma-layer
+      
+      - name: Install dependencies
+        run: npm i
+
+      - name: Package serverless
+        run: npx serverless package --stage dev --package build-package
+
+      - name Store package
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-package
+          path: ./build-package
+
+      

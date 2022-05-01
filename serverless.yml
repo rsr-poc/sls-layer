@@ -1,0 +1,29 @@
+service: sls-layers
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  environment: ${file(configs.js)}
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+custom:
+  dotenvVars: ${file(configs.js)}
+
+layers:
+  PocLayerPrisma:
+    path: layers/prisma-layer
+  PocLayersNodeModules::
+    path: layers/node_modules-layer
+
+functions:
+  api:
+    handler: src/handler.server
+    layers:
+      - { Ref: PocLayerPrisma }
+      - { Ref: PocLayerNodeModules }
+    events:
+      - httpApi: "*"
